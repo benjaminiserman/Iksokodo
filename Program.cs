@@ -16,11 +16,16 @@ internal static class Program
 	static void Main()
 	{
 		ApplicationConfiguration.Initialize();
-
-		TaskbarProcess taskBarProcess = new();
+		
+		TaskbarProcess taskBarProcess = new(Loop);
 
 		AppDomain.CurrentDomain.ProcessExit += new EventHandler(taskBarProcess.Exit);
+		
+		Application.Run(taskBarProcess);
+	}
 
+	static void Loop()
+	{
 		(KeyReceived key, bool shift)? current = null;
 
 		while (true)
