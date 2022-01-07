@@ -26,4 +26,10 @@
     <PackageReference Include="H.InputSimulator" Version="1.2.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="README.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
