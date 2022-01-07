@@ -12,83 +12,72 @@ internal static class Program
 
 	private static readonly InputSimulator _inputSimulator = new();
 
-	public static bool sleep = false;
+	public static bool paused = false;
 	public static bool abort = false;
+
+	public static ManualResetEvent handle = new(false);
+
+	private static (KeyReceived key, bool shift)? _current = null;
 
 	[STAThread]
 	static void Main()
 	{
 		ApplicationConfiguration.Initialize();
-		
+
 		TaskbarProcess taskBarProcess = new(Loop);
 
 		AppDomain.CurrentDomain.ProcessExit += new EventHandler(taskBarProcess.Exit);
-		
+
 		Application.Run(taskBarProcess);
 	}
 
 	static void Loop()
 	{
-		(KeyReceived key, bool shift)? current = null;
+		if (paused) return;
 
-		while (true)
+		(KeyReceived key, bool shift)? received = GetKey();
+		if (received is null) return;
+
+		if (received is (not KeyReceived.Other and not KeyReceived.X and not KeyReceived.Apostrophe, _) or (KeyReceived.Apostrophe, false))
 		{
-			if (sleep)
+			_current = received;
+		}
+		else
+		{
+			if (_current is (KeyReceived, bool) valid && received is (KeyReceived.X, false))
 			{
-				try
+				if (valid.key is KeyReceived.Apostrophe)
 				{
-					Thread.Sleep(Timeout.Infinite);
+					_inputSimulator.Keyboard.KeyPress(VirtualKeyCode.BACK);
+					_inputSimulator.Keyboard.KeyPress(VirtualKeyCode.BACK);
+					_inputSimulator.Keyboard.KeyPress(VirtualKeyCode.VK_X);
 				}
-				catch 
+				else
 				{
-					if (abort) return;
+					_inputSimulator.Keyboard.KeyPress(VirtualKeyCode.BACK);
+					_inputSimulator.Keyboard.KeyPress(VirtualKeyCode.BACK);
+					_inputSimulator.Keyboard.TextEntry(ConvertAndCapitalize(valid));
 				}
 			}
 
-			(KeyReceived key, bool shift) received = GetKey();
-
-			if (received is (not KeyReceived.Other and not KeyReceived.X and not KeyReceived.Apostrophe, _) or (KeyReceived.Apostrophe, false))
-			{
-				current = received;
-			}
-			else
-			{
-				if (current is (KeyReceived, bool) valid && received is (KeyReceived.X, false))
-				{
-					if (valid.key is KeyReceived.Apostrophe)
-					{
-						_inputSimulator.Keyboard.KeyPress(VirtualKeyCode.BACK);
-						_inputSimulator.Keyboard.KeyPress(VirtualKeyCode.BACK);
-						_inputSimulator.Keyboard.KeyPress(VirtualKeyCode.VK_X);
-					}
-					else
-					{
-						_inputSimulator.Keyboard.KeyPress(VirtualKeyCode.BACK);
-						_inputSimulator.Keyboard.KeyPress(VirtualKeyCode.BACK);
-						_inputSimulator.Keyboard.TextEntry(ConvertAndCapitalize(valid));
-					}
-				}
-
-				current = null;
-			}
+			_current = null;
 		}
 	}
 
-	private static (KeyReceived key, bool shift) GetKey()
+	private static (KeyReceived key, bool shift)? GetKey()
 	{
 		bool shift = GetAsyncKeyState(Keys.Shift) != 0;
 
-		while (true)
+		foreach (Keys key in _possibleKeys)
 		{
-			foreach (Keys key in _possibleKeys)
+			if (GetAsyncKeyState(key) == -32767)
 			{
-				if (GetAsyncKeyState(key) == -32767)
-				{
-					return (Convert(key), shift);
-				}
+				return (Convert(key), shift);
 			}
 		}
-	} 
+
+		return null;
+	}
 
 	private static KeyReceived Convert(Keys key) => key switch
 	{

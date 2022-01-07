@@ -8,14 +8,16 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Timers;
+using Timer = System.Timers.Timer;
 
 internal class TaskbarProcess : ApplicationContext
 {
-	private NotifyIcon _trayIcon;
-    private Thread _loopThread;
-    private ToolStripMenuItem _toggleButton, _exitButton;
-
-    private static readonly Icon _normal = new("iksokodo.ico"), _suspended = new("iksokodo_suspend.ico");
+	private readonly NotifyIcon _trayIcon;
+	private readonly ToolStripMenuItem _toggleButton, _exitButton;
+	private static readonly Icon _normal = new("iksokodo.ico"), _suspended = new("iksokodo_suspend.ico");
+    private static Action _loop;
+    private static Timer _timer;
 
     private const string PAUSE_MESSAGE = "Pause", RESUME_MESSAGE = "Resume";
 
@@ -51,8 +53,11 @@ internal class TaskbarProcess : ApplicationContext
 
         _trayIcon.MouseClick += TrayRightClick;
 
-        _loopThread = new Thread(() => loop());
-        _loopThread.Start();
+        _loop = loop;
+
+        _timer = new() { Interval = 10 };
+        _timer.Elapsed += (object _, ElapsedEventArgs _) => _loop();
+        _timer.Start();
     }
     
     private void ToggleLoop(object sender, EventArgs e)
@@ -62,27 +67,33 @@ internal class TaskbarProcess : ApplicationContext
         _toggleButton.Name = wasPaused ? PAUSE_MESSAGE : RESUME_MESSAGE;
         _toggleButton.Text = _toggleButton.Name;
 
-        Program.sleep = !wasPaused;
         _trayIcon.Icon = wasPaused ? _normal : _suspended;
 
-        if (!Program.sleep) _loopThread.Interrupt();
+        Program.paused = !wasPaused;
 	}
 
     private void TrayRightClick(object sender, MouseEventArgs e)
 	{
-        if (e.Button == MouseButtons.Right)
-        {
-            _trayIcon.ContextMenuStrip.Show(Cursor.Position);
-        }
+        switch (e.Button)
+		{
+            case MouseButtons.Left:
+			{
+                ToggleLoop(null, null);
+                break;
+			}
+            case MouseButtons.Right:
+			{
+                _trayIcon.ContextMenuStrip.Show(Cursor.Position);
+                break;
+            }
+		}
     }
 
     internal void Exit(object sender, EventArgs e)
     {
         _trayIcon.Visible = false;
-        Program.sleep = true;
-        Thread.Sleep(10);
-        Program.abort = true;
-        _loopThread.Interrupt();
+        _timer.Stop();
+        
         Application.Exit();
     }
 }
