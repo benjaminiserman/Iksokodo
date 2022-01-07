@@ -1,5 +1,8 @@
 ﻿# Iksokodo
-a background service that converts keystrokes into the Esperanto X-system
+a background service that converts keystrokes into the Esperanto X-system.
+
+Compatible with Windows 10 (and probably other Windows versions too, but untested. If it works on a version not listed here, please tell me!)
+If Iksokodo does not work on your Windows computer, try out the "self-contained.zip" release instead.
 
 This is a continuation of https://github.com/winggar/XSistemoKonvertilo
 
