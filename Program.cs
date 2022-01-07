@@ -12,6 +12,9 @@ internal static class Program
 
 	private static readonly InputSimulator _inputSimulator = new();
 
+	public static bool sleep = false;
+	public static bool abort = false;
+
 	[STAThread]
 	static void Main()
 	{
@@ -30,6 +33,18 @@ internal static class Program
 
 		while (true)
 		{
+			if (sleep)
+			{
+				try
+				{
+					Thread.Sleep(Timeout.Infinite);
+				}
+				catch 
+				{
+					if (abort) return;
+				}
+			}
+
 			(KeyReceived key, bool shift) received = GetKey();
 
 			if (received is (not KeyReceived.Other and not KeyReceived.X and not KeyReceived.Apostrophe, _) or (KeyReceived.Apostrophe, false))

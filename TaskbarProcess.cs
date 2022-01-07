@@ -12,45 +12,61 @@ using System.Windows.Forms;
 internal class TaskbarProcess : ApplicationContext
 {
 	private NotifyIcon _trayIcon;
+    private Thread _loopThread;
+    private ToolStripMenuItem _toggleButton, _exitButton;
+
+    private static readonly Icon _normal = new("iksokodo.ico"), _suspended = new("iksokodo_suspend.ico");
+
+    private const string PAUSE_MESSAGE = "Pause", RESUME_MESSAGE = "Resume";
 
     internal TaskbarProcess(Action loop)
     {
-        Icon foundIcon = Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location);
+        ContextMenuStrip menuStrip = new();
 
-        ContextMenuStrip menuStrip = new()
+        _toggleButton = new()
         {
-            Visible = true,
+            Name = PAUSE_MESSAGE,
+            Text = PAUSE_MESSAGE,
         };
 
-        ToolStripMenuItem testButton = new()
+        _exitButton = new()
         {
-            Name = "name testing",
-            Text = "text testing",
-            Visible = true,
+            Name = "Exit",
+            Text = "Exit",
         };
 
-        testButton.Click += new EventHandler(Exit);
-
-        menuStrip.Items.Add(testButton);
+        _toggleButton.Click += new EventHandler(ToggleLoop);
+        _exitButton.Click += new EventHandler(Exit);
+       
+        menuStrip.Items.Add(_toggleButton);
+        menuStrip.Items.Add(_exitButton);
 
         _trayIcon = new()
         {
             Visible = true,
-            Icon = foundIcon,
-            Text = "woah!?",
-            BalloonTipIcon = ToolTipIcon.Info,
-            BalloonTipTitle = "TestTitle",
-            BalloonTipText = "woah woah woah",
+            Icon = _normal,
+            Text = "Iksokodo",
             ContextMenuStrip = menuStrip,
         };
 
-        _trayIcon.ShowBalloonTip(1);
-
-        _trayIcon.ContextMenuStrip.Items.Add("testin2", null, (object _, EventArgs _) => { });
         _trayIcon.MouseClick += TrayRightClick;
 
-        new Thread(() => loop()).Start();
+        _loopThread = new Thread(() => loop());
+        _loopThread.Start();
     }
+    
+    private void ToggleLoop(object sender, EventArgs e)
+	{
+        bool wasPaused = _toggleButton.Name == RESUME_MESSAGE;
+
+        _toggleButton.Name = wasPaused ? PAUSE_MESSAGE : RESUME_MESSAGE;
+        _toggleButton.Text = _toggleButton.Name;
+
+        Program.sleep = !wasPaused;
+        _trayIcon.Icon = wasPaused ? _normal : _suspended;
+
+        if (!Program.sleep) _loopThread.Interrupt();
+	}
 
     private void TrayRightClick(object sender, MouseEventArgs e)
 	{
@@ -63,6 +79,10 @@ internal class TaskbarProcess : ApplicationContext
     internal void Exit(object sender, EventArgs e)
     {
         _trayIcon.Visible = false;
+        Program.sleep = true;
+        Thread.Sleep(10);
+        Program.abort = true;
+        _loopThread.Interrupt();
         Application.Exit();
     }
 }
