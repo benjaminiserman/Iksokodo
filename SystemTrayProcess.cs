@@ -4,7 +4,7 @@ using System.Timers;
 using System.Windows.Forms;
 using Timer = System.Timers.Timer;
 
-internal class TaskbarProcess : ApplicationContext
+internal class SystemTrayProcess : ApplicationContext
 {
     private static readonly Icon _normal = new("iksokodo.ico"), _suspended = new("iksokodo_suspend.ico");
 
@@ -16,7 +16,7 @@ internal class TaskbarProcess : ApplicationContext
 
     private const string PAUSE_MESSAGE = "Pause", RESUME_MESSAGE = "Resume", EXIT_MESSAGE = "Exit";
 
-    internal TaskbarProcess()
+    internal SystemTrayProcess()
     {
         ContextMenuStrip menuStrip = new();
 

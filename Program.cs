@@ -6,7 +6,7 @@ internal static class Program
 	{
 		ApplicationConfiguration.Initialize();
 
-		TaskbarProcess taskBarProcess = new();
+		SystemTrayProcess taskBarProcess = new();
 
 		AppDomain.CurrentDomain.ProcessExit += new EventHandler(taskBarProcess.Exit);
 
