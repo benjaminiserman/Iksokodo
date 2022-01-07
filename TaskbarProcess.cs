@@ -1,27 +1,22 @@
 ﻿namespace Iksokodo;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using System.Timers;
+using System.Windows.Forms;
 using Timer = System.Timers.Timer;
 
 internal class TaskbarProcess : ApplicationContext
 {
-	private readonly NotifyIcon _trayIcon;
+    private static readonly Icon _normal = new("iksokodo.ico"), _suspended = new("iksokodo_suspend.ico");
+
+    private readonly NotifyIcon _trayIcon;
 	private readonly ToolStripMenuItem _toggleButton, _exitButton;
-	private static readonly Icon _normal = new("iksokodo.ico"), _suspended = new("iksokodo_suspend.ico");
-    private static Action _loop;
-    private static Timer _timer;
 
-    private const string PAUSE_MESSAGE = "Pause", RESUME_MESSAGE = "Resume";
+    private readonly Converter _converter;
+    private readonly Timer _timer;
 
-    internal TaskbarProcess(Action loop)
+    private const string PAUSE_MESSAGE = "Pause", RESUME_MESSAGE = "Resume", EXIT_MESSAGE = "Exit";
+
+    internal TaskbarProcess()
     {
         ContextMenuStrip menuStrip = new();
 
@@ -33,8 +28,8 @@ internal class TaskbarProcess : ApplicationContext
 
         _exitButton = new()
         {
-            Name = "Exit",
-            Text = "Exit",
+            Name = EXIT_MESSAGE,
+            Text = EXIT_MESSAGE,
         };
 
         _toggleButton.Click += new EventHandler(ToggleLoop);
@@ -53,24 +48,12 @@ internal class TaskbarProcess : ApplicationContext
 
         _trayIcon.MouseClick += TrayRightClick;
 
-        _loop = loop;
+        _converter = new();
 
         _timer = new() { Interval = 10 };
-        _timer.Elapsed += (object _, ElapsedEventArgs _) => _loop();
+        _timer.Elapsed += (object _, ElapsedEventArgs _) => _converter.Convert();
         _timer.Start();
     }
-    
-    private void ToggleLoop(object sender, EventArgs e)
-	{
-        bool wasPaused = _toggleButton.Name == RESUME_MESSAGE;
-
-        _toggleButton.Name = wasPaused ? PAUSE_MESSAGE : RESUME_MESSAGE;
-        _toggleButton.Text = _toggleButton.Name;
-
-        _trayIcon.Icon = wasPaused ? _normal : _suspended;
-
-        Program.paused = !wasPaused;
-	}
 
     private void TrayRightClick(object sender, MouseEventArgs e)
 	{
@@ -87,6 +70,18 @@ internal class TaskbarProcess : ApplicationContext
                 break;
             }
 		}
+    }
+
+    private void ToggleLoop(object sender, EventArgs e)
+    {
+        bool wasPaused = _toggleButton.Name == RESUME_MESSAGE;
+
+        _toggleButton.Name = wasPaused ? PAUSE_MESSAGE : RESUME_MESSAGE;
+        _toggleButton.Text = _toggleButton.Name;
+
+        _trayIcon.Icon = wasPaused ? _normal : _suspended;
+
+        _converter.Paused = !wasPaused;
     }
 
     internal void Exit(object sender, EventArgs e)
