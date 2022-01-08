@@ -50,5 +50,8 @@ internal static class HotkeyManager
 		_listener.Update(_hotkey, newHotkey);
 
 		_hotkey = newHotkey;
+		Program.Config.ToggleHotkey = newHotkey;
+
+		Program.SaveConfig();
 	}
 }

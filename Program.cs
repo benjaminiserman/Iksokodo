@@ -14,7 +14,7 @@ internal static class Program
 		if (!File.Exists(CONFIG_PATH))
 		{
 			Config = new Config();
-			File.WriteAllText(CONFIG_PATH, JsonSerializer.Serialize(Config));
+			SaveConfig();
 		}
 		else Config = JsonSerializer.Deserialize<Config>(File.ReadAllText(CONFIG_PATH));
 
@@ -24,4 +24,6 @@ internal static class Program
 
 		Application.Run(taskBarProcess);
 	}
+
+	public static void SaveConfig() => File.WriteAllText(CONFIG_PATH, JsonSerializer.Serialize(Config));
 }
