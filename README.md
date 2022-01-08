@@ -12,6 +12,8 @@ When typing in the Esperanto X-System, keystrokes will be converted to their Esp
 
 To escape a character, type an apostrophe before the x. For example, typing "c'x" will result in "cx".
 
-To pause or resume Iksokodo, click its icon on the system tray.
+To pause or resume Iksokodo, click its icon on the system tray, or use the hotkey "Alt + E".
+
+To change the toggle hotkey, right-click the Iksokodo icon on the system tray and choose "Change Hotkey".
 
 To exit Iksokodo, right-click its icon on the system tray and choose "Exit".
