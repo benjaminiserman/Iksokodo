@@ -31,7 +31,7 @@ internal static class HotkeyManager
 		};
 	}
 
-	public static void EnableSelector(Control control) => new HotkeySelector().Enable(control);
+	public static void EnableSelector(Control control) => new HotkeySelector().Enable(control, _hotkey);
 
 	public static void UpdateHotkey(string s)
 	{
