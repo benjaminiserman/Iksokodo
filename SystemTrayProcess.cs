@@ -50,7 +50,7 @@ internal class SystemTrayProcess : ApplicationContext
 
         _converter = new();
 
-        HotKeyManager.RegisterHotKey(ToggleLoop);
+        HotkeyManager.RegisterHotkey(ToggleLoop);
 
         _timer = new() { Interval = 10 };
         _timer.Elapsed += (object _, ElapsedEventArgs _) => _converter.Convert();

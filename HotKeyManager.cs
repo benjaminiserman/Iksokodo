@@ -7,15 +7,15 @@ using System.Text;
 using System.Threading.Tasks;
 using WK.Libraries.HotkeyListenerNS;
 
-internal static class HotKeyManager
+internal static class HotkeyManager
 {
 	static HotkeyListener _listener;
 
-    public static void RegisterHotKey(Action<object, EventArgs> action)
+    public static void RegisterHotkey(Action<object, EventArgs> action)
 	{
 		_listener = new();
 
-		Hotkey toggleKey = new(Keys.Alt, Keys.E);
+		Hotkey toggleKey = Program.Config.ToggleHotkey;
 
 		_listener.Add(toggleKey);
 
