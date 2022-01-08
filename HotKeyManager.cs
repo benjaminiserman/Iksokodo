@@ -1,10 +1,5 @@
 ﻿namespace Iksokodo;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using WK.Libraries.HotkeyListenerNS;
 
 internal static class HotkeyManager
@@ -13,7 +8,7 @@ internal static class HotkeyManager
 	static Action<object, EventArgs> _action;
 	static Hotkey _hotkey;
 
-    public static void RegisterHotkey(Action<object, EventArgs> action)
+	public static void RegisterHotkey(Action<object, EventArgs> action)
 	{
 		_listener = new();
 		_action = action;
