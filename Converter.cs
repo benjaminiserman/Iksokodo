@@ -53,10 +53,10 @@ internal class Converter
 			}
 		}
 	}
-
+	
 	private static Key? GetKey()
 	{
-		bool shift = GetAsyncKeyState(Keys.Shift) != 0;
+		bool shift = GetAsyncKeyState(Keys.ShiftKey) != 0;
 
 		foreach (Keys key in _possibleKeys)
 		{
