@@ -21,7 +21,7 @@
 		_shift = shift;
 	}
 
-	public bool IsStart => _keyReceived is not PossibleKey.X and not PossibleKey.Other;
+	public bool IsStart => _keyReceived is not PossibleKey.X and not PossibleKey.Other and not PossibleKey.Apostrophe;
 
 	public bool IsApostrophe => _keyReceived is PossibleKey.Apostrophe && !_shift;
 
