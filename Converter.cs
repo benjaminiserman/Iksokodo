@@ -13,7 +13,7 @@ internal class Converter
 
 	private readonly InputSimulator _inputSimulator = new();
 
-	private Key? _current = null;
+	private Key? _cached = null;
 
 	public bool Paused { get; set; }
 
@@ -29,13 +29,13 @@ internal class Converter
 		{
 			if (receivedKey.IsStart || receivedKey.IsApostrophe)
 			{
-				_current = received;
+				_cached = received;
 			}
 			else
 			{
-				if (_current is Key currentKey && receivedKey.IsX)
+				if (_cached is Key cachedKey && receivedKey.IsX)
 				{
-					if (currentKey.IsApostrophe) // c'x => cx
+					if (cachedKey.IsApostrophe) // c'x => cx
 					{
 						_inputSimulator.Keyboard.KeyPress(VirtualKeyCode.BACK);
 						_inputSimulator.Keyboard.KeyPress(VirtualKeyCode.BACK);
@@ -45,11 +45,11 @@ internal class Converter
 					{
 						_inputSimulator.Keyboard.KeyPress(VirtualKeyCode.BACK);
 						_inputSimulator.Keyboard.KeyPress(VirtualKeyCode.BACK);
-						_inputSimulator.Keyboard.TextEntry((char)currentKey);
+						_inputSimulator.Keyboard.TextEntry((char)cachedKey);
 					}
 				}
 
-				_current = null;
+				_cached = null;
 			}
 		}
 	}
