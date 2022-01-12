@@ -1,4 +1,8 @@
-﻿# Iksokodo
+# Iksokodo
+![Windows](https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white)
+![.Net](https://img.shields.io/badge/.NET6-5C2D91?style=for-the-badge&logo=.net&logoColor=white)
+![Downloads](https://img.shields.io/github/downloads/winggar/Iksokodo/total?style=for-the-badge)
+
 a background service that converts keystrokes into the Esperanto X-system.
 
 Compatible with Windows 10 (and probably other Windows versions too, but untested. If it works on a version not listed here, please tell me!)
