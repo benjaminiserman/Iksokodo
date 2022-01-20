@@ -45,4 +45,4 @@ Alternatively see the GitHub documentation on [creating a pull request](https://
 
 ## License
 
-![License](https://img.shields.io/github/license/winggar/namehere?style=for-the-badge)
+![License](https://img.shields.io/github/license/winggar/Iksokodo?style=for-the-badge)
