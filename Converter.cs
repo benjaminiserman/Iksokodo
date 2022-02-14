@@ -53,7 +53,7 @@ internal class Converter
 			}
 		}
 	}
-	
+
 	private static Key? GetKey()
 	{
 		bool shift = GetAsyncKeyState(Keys.ShiftKey) != 0;
